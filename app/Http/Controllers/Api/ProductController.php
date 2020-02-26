@@ -21,8 +21,18 @@ class ProductController extends Controller
     }
     public function show(Product $id)
     {
-    	$data = ['data' => $id];
-    	return response()->json($data);
+    	$produto = $this->product->find($id);
+		
+    	if(!empty($produto))
+    	{
+    		$data = ['data' => $produto];
+    		return response()->json($data);
+    	}else
+    	{
+    		$return = ['data' => ['msg' => 'Produto não encontrado!']];
+	    	return response()->json($return,404);	
+    	}
+    		        	
     }
     public function store(Request $request)
     {
@@ -37,7 +47,7 @@ class ProductController extends Controller
     		{
     			return response()->json(ApiError::errorMessage($e->getMessage(),1010));
     		}
-    		return response()->json(ApiError::errorMessage('Houve um errro ao realizar operação',1010));
+    		return response()->json(ApiError::errorMessage('Houve um errro ao realizar operação de inserir',1010));
     	}
 		
     }	
@@ -57,7 +67,25 @@ class ProductController extends Controller
     		{
     			return response()->json(ApiError::errorMessage($e->getMessage(),1010));
     		}
-    		return response()->json(ApiError::errorMessage('Houve um errro ao realizar operação',1010));
+    		return response()->json(ApiError::errorMessage('Houve um errro ao realizar operação atualizar',1011));
+    	}
+		
+    }
+
+    public function delete(Product $id)
+    {
+    	try{
+    		$id->delete();
+
+    		$return = ['data' => ['msg' => 'Produto:' .$id->name .' excluido com sucesso!']];
+    		return response()->json($return,200);
+    	}
+    	catch(\Exception $e){
+    		if(config('app.debug'))
+    		{
+    			return response()->json(ApiError::errorMessage($e->getMessage(),1010));
+    		}
+    		return response()->json(ApiError::errorMessage('Houve um errro ao realizar operação de remover',1012));
     	}
 		
     }	
