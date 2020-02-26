@@ -21,18 +21,12 @@ class ProductController extends Controller
     }
     public function show(Product $id)
     {
-    	$produto = $this->product->find($id);
-		
-    	if(!empty($produto))
-    	{
-    		$data = ['data' => $produto];
-    		return response()->json($data);
-    	}else
-    	{
-    		$return = ['data' => ['msg' => 'Produto não encontrado!']];
-	    	return response()->json($return,404);	
-    	}
-    		        	
+		try {
+		    $produto = Product::find($id);
+		    return response()->json($produto);
+		}catch (ModelNotFoundException $e) {
+	    	return response()->json($e->getMessage(),404);
+		}    		        	
     }
     public function store(Request $request)
     {
